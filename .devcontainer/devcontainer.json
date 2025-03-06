@@ -1,0 +1,29 @@
+{
+	"name": "them-forest-vuexy",
+	"dockerComposeFile": [
+		"../docker-compose.yaml"
+	],
+	"service": "app",
+	"workspaceFolder": "/home/node/app",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"rocketseat.theme-omni",
+				"pkief.material-icon-theme",
+				"zhuangtongfa.material-theme",
+				"firsttris.vscode-jest-runner",
+				"esbenp.prettier-vscode",
+				"ms-azuretools.vscode-docker",
+				"bradlc.vscode-tailwindcss",
+				"dbaeumer.vscode-eslint",
+				"mikestead.dotenv",
+				"oderwat.indent-rainbow",
+				"vivaxy.vscode-conventional-commits",
+				"vue.volar",
+				"shenjiaolong.vue-helper",
+				"christian-kohler.path-intellisense",
+				"eamodio.gitlens"
+			]
+		}
+	}
+}
