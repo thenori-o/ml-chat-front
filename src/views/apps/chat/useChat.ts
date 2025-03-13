@@ -1,23 +1,23 @@
-import type { Chat, ChatContact, ChatStatus } from '@/@fake-db/types'
+import type { Chat, ChatDocument, ChatStatus } from '@/@fake-db/types';
 
 export type ActiveChat = {
   chat?: Chat
-  contact: ChatContact
-} | null
+  document: ChatDocument
+} | null;
 
 export const useChat = () => {
   const resolveAvatarBadgeVariant = (status: ChatStatus) => {
     if (status === 'online')
-      return 'success'
+      return 'success';
     if (status === 'busy')
-      return 'error'
+      return 'error';
     if (status === 'away')
-      return 'warning'
+      return 'warning';
 
-    return 'secondary'
-  }
+    return 'secondary';
+  };
 
   return {
     resolveAvatarBadgeVariant,
-  }
-}
+  };
+};

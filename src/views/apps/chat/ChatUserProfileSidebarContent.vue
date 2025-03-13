@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { useChat } from './useChat'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
-import { avatarText } from '@core/utils/formatters'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { useChat } from './useChat';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
+import { avatarText } from '@core/utils/formatters';
 
 defineEmits<{
   (e: 'close'): void
-}>()
+}>();
 
 // composables
-const store = useChatStore()
-const { resolveAvatarBadgeVariant } = useChat()
+const store = useChatStore();
+const { resolveAvatarBadgeVariant } = useChat();
 
 const userStatusRadioOptions = [
   { title: 'Online', value: 'online', color: 'success' },
   { title: 'Away', value: 'away', color: 'warning' },
   { title: 'Do not disturb', value: 'busy', color: 'error' },
   { title: 'Offline', value: 'offline', color: 'secondary' },
-]
+];
 </script>
 
 <template>

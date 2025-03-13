@@ -1,46 +1,46 @@
 <script lang="ts" setup>
-import type { ChatOut } from '@/@fake-db/types'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
-import { formatDate } from '@core/utils/formatters'
+import type { ChatOut } from '@/@fake-db/types';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
+import { formatDate } from '@core/utils/formatters';
 
-const store = useChatStore()
+const store = useChatStore();
 
 interface MessageGroup {
   senderId: ChatOut['messages'][number]['senderId']
   messages: Omit<ChatOut['messages'][number], 'senderId'>[]
 }
 
-const contact = computed(() => ({
-  id: store.activeChat?.contact.id,
-  avatar: store.activeChat?.contact.avatar,
-}))
+const document = computed(() => ({
+  id: store.activeChat?.document.id,
+  avatar: store.activeChat?.document.avatar,
+}));
 
 // Feedback icon
 const resolveFeedbackIcon = (feedback: ChatOut['messages'][number]['feedback']) => {
   if (feedback.isSeen)
-    return { icon: 'tabler-checks', color: 'success' }
+    return { icon: 'tabler-checks', color: 'success' };
   else if (feedback.isDelivered)
-    return { icon: 'tabler-checks', color: undefined }
+    return { icon: 'tabler-checks', color: undefined };
   else
-    return { icon: 'tabler-check', color: undefined }
-}
+    return { icon: 'tabler-check', color: undefined };
+};
 
 const msgGroups = computed(() => {
-  let messages: ChatOut['messages'] = []
+  let messages: ChatOut['messages'] = [];
 
-  const _msgGroups: MessageGroup[] = []
+  const _msgGroups: MessageGroup[] = [];
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (store.activeChat!.chat) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    messages = store.activeChat!.chat.messages
+    messages = store.activeChat!.chat.messages;
 
-    let msgSenderId = messages[0].senderId
+    let msgSenderId = messages[0].senderId;
 
     let msgGroup: MessageGroup = {
       senderId: msgSenderId,
       messages: [],
-    }
+    };
 
     messages.forEach((msg, index) => {
       if (msgSenderId === msg.senderId) {
@@ -48,11 +48,11 @@ const msgGroups = computed(() => {
           message: msg.message,
           time: msg.time,
           feedback: msg.feedback,
-        })
+        });
       }
       else {
-        msgSenderId = msg.senderId
-        _msgGroups.push(msgGroup)
+        msgSenderId = msg.senderId;
+        _msgGroups.push(msgGroup);
         msgGroup = {
           senderId: msg.senderId,
           messages: [
@@ -62,16 +62,16 @@ const msgGroups = computed(() => {
               feedback: msg.feedback,
             },
           ],
-        }
+        };
       }
 
       if (index === messages.length - 1)
-        _msgGroups.push(msgGroup)
-    })
+        _msgGroups.push(msgGroup);
+    });
   }
 
-  return _msgGroups
-})
+  return _msgGroups;
+});
 </script>
 
 <template>
@@ -81,21 +81,21 @@ const msgGroups = computed(() => {
       :key="msgGrp.senderId + String(index)"
       class="chat-group d-flex align-start"
       :class="[{
-        'flex-row-reverse': msgGrp.senderId !== contact.id,
+        'flex-row-reverse': msgGrp.senderId !== document.id,
         'mb-4': msgGroups.length - 1 !== index,
       }]"
     >
       <div
         class="chat-avatar"
-        :class="msgGrp.senderId !== contact.id ? 'ms-4' : 'me-4'"
+        :class="msgGrp.senderId !== document.id ? 'ms-4' : 'me-4'"
       >
         <VAvatar size="32">
-          <VImg :src="msgGrp.senderId === contact.id ? contact.avatar : store.profileUser?.avatar" />
+          <VImg :src="msgGrp.senderId === document.id ? document.avatar : store.profileUser?.avatar" />
         </VAvatar>
       </div>
       <div
         class="chat-body d-inline-flex flex-column"
-        :class="msgGrp.senderId !== contact.id ? 'align-end' : 'align-start'"
+        :class="msgGrp.senderId !== document.id ? 'align-end' : 'align-start'"
       >
         <p
           v-for="(msgData, msgIndex) in msgGrp.messages"
@@ -103,15 +103,15 @@ const msgGroups = computed(() => {
           class="chat-content py-2 px-4 elevation-1"
           style="background-color: rgb(var(--v-theme-surface));"
           :class="[
-            msgGrp.senderId === contact.id ? 'chat-left' : 'bg-primary text-white chat-right',
+            msgGrp.senderId === document.id ? 'chat-left' : 'bg-primary text-white chat-right',
             msgGrp.messages.length - 1 !== msgIndex ? 'mb-3' : 'mb-1',
           ]"
         >
           {{ msgData.message }}
         </p>
-        <div :class="{ 'text-right': msgGrp.senderId !== contact.id }">
+        <div :class="{ 'text-right': msgGrp.senderId !== document.id }">
           <VIcon
-            v-if="msgGrp.senderId !== contact.id"
+            v-if="msgGrp.senderId !== document.id"
             size="18"
             :color="resolveFeedbackIcon(msgGrp.messages[msgGrp.messages.length - 1].feedback).color"
           >

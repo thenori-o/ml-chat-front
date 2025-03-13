@@ -1,18 +1,18 @@
 <script lang="ts" setup>
-import navItems from '@/navigation/horizontal'
-import { useThemeConfig } from '@core/composable/useThemeConfig'
-import { themeConfig } from '@themeConfig'
+import navItems from '@/navigation/horizontal';
+import { useThemeConfig } from '@core/composable/useThemeConfig';
+import { themeConfig } from '@themeConfig';
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
-import NavBarI18n from '@/layouts/components/NavBarI18n.vue'
-import NavBarNotifications from '@/layouts/components/NavBarNotifications.vue'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
-import { HorizontalNavLayout } from '@layouts'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import Footer from '@/layouts/components/Footer.vue';
+import NavBarI18n from '@/layouts/components/NavBarI18n.vue';
+import NavBarNotifications from '@/layouts/components/NavBarNotifications.vue';
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue';
+import UserProfile from '@/layouts/components/UserProfile.vue';
+import { HorizontalNavLayout } from '@layouts';
+import { VNodeRenderer } from '@layouts/components/VNodeRenderer';
 
-const { appRouteTransition } = useThemeConfig()
+const { appRouteTransition } = useThemeConfig();
 </script>
 
 <template>

@@ -31,23 +31,23 @@ const props = withDefaults(defineProps<Props>(), {
     state: '',
     zipCode: null,
   }),
-})
+});
 
-const emit = defineEmits<Emit>()
+const emit = defineEmits<Emit>();
 
-const billingAddress = ref<BillingAddress>(structuredClone(toRaw(props.billingAddress)))
+const billingAddress = ref<BillingAddress>(structuredClone(toRaw(props.billingAddress)));
 
 const resetForm = () => {
-  emit('update:isDialogVisible', false)
-  billingAddress.value = structuredClone(toRaw(props.billingAddress))
-}
+  emit('update:isDialogVisible', false);
+  billingAddress.value = structuredClone(toRaw(props.billingAddress));
+};
 
 const onFormSubmit = () => {
-  emit('update:isDialogVisible', false)
-  emit('submit', billingAddress.value)
-}
+  emit('update:isDialogVisible', false);
+  emit('submit', billingAddress.value);
+};
 
-const selectedAddress = ref('Home')
+const selectedAddress = ref('Home');
 
 const addressTypes = [
   {
@@ -62,14 +62,14 @@ const addressTypes = [
     desc: 'Delivery Time (10am - 6pm)',
     value: 'Office',
   },
-]
+];
 </script>
 
 <template>
   <VDialog
     :width="$vuetify.display.smAndDown ? 'auto' : 610 "
     :model-value="props.isDialogVisible"
-    @update:model-value="val => $emit('update:isDialogVisible', val)"
+    @update:model-value="(val: boolean) => $emit('update:isDialogVisible', val)"
   >
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn @click="$emit('update:isDialogVisible', false)" />

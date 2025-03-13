@@ -25,7 +25,7 @@ module.exports = {
     '@typescript-eslint',
     'regex',
   ],
-  ignorePatterns: ['src/@iconify/*.js', 'node_modules', 'dist', '*.d.ts'],
+  ignorePatterns: ['src/@iconify/*.js', 'node_modules', 'dist', '*.d.ts', 'tsconfig.json'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -53,8 +53,9 @@ module.exports = {
     // Disable max-len
     'max-len': 'off',
 
-    // we don't want it
-    'semi': ['error', 'never'],
+    'semi': ['error', 'always'],
+
+    '@typescript-eslint/semi': ['error', 'always'],
 
     // add parens ony when required in arrow function
     'arrow-parens': ['error', 'as-needed'],
@@ -240,4 +241,4 @@ module.exports = {
       typescript: {},
     },
   },
-}
+};

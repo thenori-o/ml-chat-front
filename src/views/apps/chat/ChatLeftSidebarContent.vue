@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import type { ChatContact as TypeChatContact } from '@/@fake-db/types'
-import ChatContact from '@/views/apps/chat/ChatContact.vue'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import type { ChatDocument as TypeChatDocument } from '@/@fake-db/types';
+import ChatDocument from '@/views/apps/chat/ChatDocument.vue';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
 
 const props = defineProps<{
   search: string
   isDrawerOpen: boolean
-}>()
+}>();
 
 defineEmits<{
-  (e: 'openChatOfContact', id: TypeChatContact['id']): void
+  (e: 'openChatOfDocument', id: TypeChatDocument['id']): void
   (e: 'showUserProfile'): void
   (e: 'close'): void
-}>()
+}>();
 
-const search = useVModel(props, 'search')
+const search = useVModel(props, 'search');
 
-const store = useChatStore()
+const store = useChatStore();
 </script>
 
 <template>
@@ -53,56 +53,56 @@ const store = useChatStore()
 
   <PerfectScrollbar
     tag="ul"
-    class="d-flex flex-column gap-y-1 chat-contacts-list px-3 list-none"
+    class="d-flex flex-column gap-y-1 chat-documents-list px-3 list-none"
     :options="{ wheelPropagation: false }"
   >
     <li>
-      <span class="chat-contact-header d-block text-primary text-xl font-weight-medium">Chats</span>
+      <span class="chat-document-header d-block text-primary text-xl font-weight-medium">Chats</span>
     </li>
 
-    <ChatContact
-      v-for="contact in store.chatsContacts"
-      :key="`chat-${contact.id}`"
-      :user="contact"
-      is-chat-contact
-      @click="$emit('openChatOfContact', contact.id)"
+    <ChatDocument
+      v-for="document in store.chatsDocuments"
+      :key="`chat-${document.id}`"
+      :user="document"
+      is-chat-document
+      @click="$emit('openChatOfDocument', document.id)"
     />
 
     <span
-      v-show="!store.chatsContacts.length"
+      v-show="!store.chatsDocuments.length"
       class="no-chat-items-text text-disabled"
     >No chats found</span>
 
     <li>
-      <span class="chat-contact-header d-block text-primary text-xl font-weight-medium">Documentos</span>
+      <span class="chat-document-header d-block text-primary text-xl font-weight-medium">Documentos</span>
     </li>
 
-    <ChatContact
-      v-for="contact in store.contacts"
-      :key="`chat-${contact.id}`"
-      :user="contact"
-      @click="$emit('openChatOfContact', contact.id)"
+    <ChatDocument
+      v-for="document in store.documents"
+      :key="`chat-${document.id}`"
+      :user="document"
+      @click="$emit('openChatOfDocument', document.id)"
     />
 
     <span
-      v-show="!store.contacts.length"
+      v-show="!store.documents.length"
       class="no-chat-items-text text-disabled"
-    >No contacts found</span>
+    >No documents found</span>
   </PerfectScrollbar>
 </template>
 
 <style lang="scss">
-.chat-contacts-list {
+.chat-documents-list {
   --chat-content-spacing-x: 16px;
 
   padding-block-end: 0.75rem;
 
-  .chat-contact-header {
+  .chat-document-header {
     margin-block-end: 0.625rem;
     margin-block-start: 1.25rem;
   }
 
-  .chat-contact-header,
+  .chat-document-header,
   .no-chat-items-text {
     margin-inline: var(--chat-content-spacing-x);
   }

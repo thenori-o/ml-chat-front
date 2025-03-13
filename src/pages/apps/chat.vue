@@ -1,101 +1,101 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { useDisplay, useTheme } from 'vuetify'
-import type { ChatContact as TypeChatContact } from '@/@fake-db/types'
-import vuetifyInitialThemes from '@/plugins/vuetify/theme'
-import ChatLeftSidebarContent from '@/views/apps/chat/ChatLeftSidebarContent.vue'
-import ChatLog from '@/views/apps/chat/ChatLog.vue'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
-import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { useDisplay, useTheme } from 'vuetify';
+import type { ChatDocument as TypeChatDocument } from '@/@fake-db/types';
+import vuetifyInitialThemes from '@/plugins/vuetify/theme';
+import ChatLeftSidebarContent from '@/views/apps/chat/ChatLeftSidebarContent.vue';
+import ChatLog from '@/views/apps/chat/ChatLog.vue';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
+import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar';
 
 // composables
-const vuetifyDisplays = useDisplay()
-const store = useChatStore()
-const { isLeftSidebarOpen } = useResponsiveLeftSidebar(vuetifyDisplays.smAndDown)
+const vuetifyDisplays = useDisplay();
+const store = useChatStore();
+const { isLeftSidebarOpen } = useResponsiveLeftSidebar(vuetifyDisplays.smAndDown);
 
 // Perfect scrollbar
-const chatLogPS = ref()
+const chatLogPS = ref();
 
 const scrollToBottomInChatLog = () => {
-  const scrollEl = chatLogPS.value.$el || chatLogPS.value
+  const scrollEl = chatLogPS.value.$el || chatLogPS.value;
 
-  scrollEl.scrollTop = scrollEl.scrollHeight
-}
+  scrollEl.scrollTop = scrollEl.scrollHeight;
+};
 
 // Search query
-const q = ref('')
+const q = ref('');
 
 watch(
   q,
-  val => store.fetchChatsAndContacts(val),
+  val => store.fetchChatsAndDocuments(val),
   { immediate: true },
-)
+);
 
 // Open Sidebar in smAndDown when "start conversation" is clicked
 const startConversation = () => {
   if (vuetifyDisplays.mdAndUp.value)
-    return
-  isLeftSidebarOpen.value = true
-}
+    return;
+  isLeftSidebarOpen.value = true;
+};
 
 // Chat message
-const msg = ref('')
+const msg = ref('');
 
 const sendMessage = async () => {
   if (!msg.value)
-    return
+    return;
 
-  await store.sendMsg(msg.value)
+  await store.sendMsg(msg.value);
 
   // Reset message input
-  msg.value = ''
+  msg.value = '';
 
   // Scroll to bottom
   nextTick(() => {
-    scrollToBottomInChatLog()
-  })
-}
+    scrollToBottomInChatLog();
+  });
+};
 
-const openChatOfContact = async (userId: TypeChatContact['id']) => {
-  await store.getChat(userId)
+const openChatOfDocument = async (userId: TypeChatDocument['id']) => {
+  await store.getChat(userId);
 
   // Reset message input
-  msg.value = ''
+  msg.value = '';
 
   // Set unseenMsgs to 0
-  const contact = store.chatsContacts.find(c => c.id === userId)
-  if (contact)
-    contact.chat.unseenMsgs = 0
+  const document = store.chatsDocuments.find(c => c.id === userId);
+  if (document)
+    document.chat.unseenMsgs = 0;
 
-  // if smAndDown =>  Close Chat & Contacts left sidebar
+  // if smAndDown =>  Close Chat & Documents left sidebar
   if (vuetifyDisplays.smAndDown.value)
-    isLeftSidebarOpen.value = false
+    isLeftSidebarOpen.value = false;
 
   // Scroll to bottom
   nextTick(() => {
-    scrollToBottomInChatLog()
-  })
-}
+    scrollToBottomInChatLog();
+  });
+};
 
 // User profile sidebar
-const isUserProfileSidebarOpen = ref(false)
+const isUserProfileSidebarOpen = ref(false);
 
 // Active chat user profile sidebar
-const isActiveChatUserProfileSidebarOpen = ref(false)
+const isActiveChatUserProfileSidebarOpen = ref(false);
 
 // file input
-const refInputEl = ref<HTMLElement>()
+const refInputEl = ref<HTMLElement>();
 
-const { name } = useTheme()
+const { name } = useTheme();
 
 const chatContentContainerBg = computed(() => {
-  let color = 'transparent'
+  let color = 'transparent';
 
   if (vuetifyInitialThemes)
-    color = vuetifyInitialThemes.themes?.[name.value].colors?.background as string
+    color = vuetifyInitialThemes.themes?.[name.value].colors?.background as string;
 
-  return color
-})
+  return color;
+});
 </script>
 
 <template>
@@ -114,7 +114,7 @@ const chatContentContainerBg = computed(() => {
       <ChatLeftSidebarContent
         v-model:isDrawerOpen="isLeftSidebarOpen"
         v-model:search="q"
-        @open-chat-of-contact="openChatOfContact"
+        @open-chat-of-document="openChatOfDocument"
         @show-user-profile="isUserProfileSidebarOpen = true"
         @close="isLeftSidebarOpen = false"
       />
@@ -144,10 +144,10 @@ const chatContentContainerBg = computed(() => {
           >
             <div class="flex-grow-1 ms-4 overflow-hidden">
               <p class="text-h6 mb-0">
-                {{ store.activeChat.contact.fullName }}
+                {{ store.activeChat.document.fullName }}
               </p>
               <p class="text-truncate mb-0 text-disabled">
-                {{ store.activeChat.contact.role }}
+                {{ store.activeChat.document.role }}
               </p>
             </div>
           </div>
@@ -192,7 +192,7 @@ const chatContentContainerBg = computed(() => {
           @submit.prevent="sendMessage"
         >
           <VTextField
-            :key="store.activeChat?.contact.id"
+            :key="store.activeChat?.document.id"
             v-model="msg"
             variant="solo"
             class="chat-message-input"

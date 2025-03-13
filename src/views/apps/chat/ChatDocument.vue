@@ -1,35 +1,35 @@
 <script lang="ts" setup>
-import type { ChatContact, ChatContactWithChat } from '@/@fake-db/types'
-import { useChat } from '@/views/apps/chat/useChat'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
-import { avatarText, formatDateToMonthShort } from '@core/utils/formatters'
+import type { ChatDocument, ChatDocumentWithChat } from '@/@fake-db/types';
+import { useChat } from '@/views/apps/chat/useChat';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
+import { avatarText, formatDateToMonthShort } from '@core/utils/formatters';
 
 interface Props {
-  isChatContact?: boolean
-  user: ChatContact | ChatContactWithChat
+  isChatDocument?: boolean
+  user: ChatDocument | ChatDocumentWithChat
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isChatContact: false,
-})
+  isChatDocument: false,
+});
 
-const store = useChatStore()
-const { resolveAvatarBadgeVariant } = useChat()
+const store = useChatStore();
+const { resolveAvatarBadgeVariant } = useChat();
 
-const isChatContactActive = computed(() => {
-  const isActive = store.activeChat?.contact.id === props.user.id
-  if (!props.isChatContact)
-    return !store.activeChat?.chat && isActive
+const isChatDocumentActive = computed(() => {
+  const isActive = store.activeChat?.document.id === props.user.id;
+  if (!props.isChatDocument)
+    return !store.activeChat?.chat && isActive;
 
-  return isActive
-})
+  return isActive;
+});
 </script>
 
 <template>
   <li
-    :key="store.chatsContacts.length"
-    class="chat-contact cursor-pointer d-flex align-center"
-    :class="{ 'chat-contact-active': isChatContactActive }"
+    :key="store.chatsDocuments.length"
+    class="chat-document cursor-pointer d-flex align-center"
+    :class="{ 'chat-document-active': isChatDocumentActive }"
   >
     <VBadge
       dot
@@ -38,7 +38,7 @@ const isChatContactActive = computed(() => {
       offset-y="0"
       :color="resolveAvatarBadgeVariant(props.user.status)"
       bordered
-      :model-value="props.isChatContact"
+      :model-value="props.isChatDocument"
     >
       <VAvatar
         size="38"
@@ -58,11 +58,11 @@ const isChatContactActive = computed(() => {
         {{ props.user.fullName }}
       </p>
       <p class="mb-0 text-truncate text-disabled">
-        {{ props.isChatContact && 'chat' in props.user ? props.user.chat.lastMessage.message : props.user.about }}
+        {{ props.isChatDocument && 'chat' in props.user ? props.user.chat.lastMessage.message : props.user.about }}
       </p>
     </div>
     <div
-      v-if="props.isChatContact && 'chat' in props.user"
+      v-if="props.isChatDocument && 'chat' in props.user"
       class="d-flex flex-column align-self-start"
     >
       <span class="d-block text-sm text-disabled whitespace-no-wrap">{{ formatDateToMonthShort(props.user.chat.lastMessage.time) }}</span>
@@ -82,7 +82,7 @@ const isChatContactActive = computed(() => {
 @use "@core/scss/base/mixins";
 @use "vuetify/lib/styles/tools/states" as vuetifyStates;
 
-.chat-contact {
+.chat-document {
   border-radius: vuetify.$border-radius-root;
   padding-block: 8px;
   padding-inline: 12px;
@@ -90,7 +90,7 @@ const isChatContactActive = computed(() => {
   @include mixins.before-pseudo;
   @include vuetifyStates.states($active: false);
 
-  &.chat-contact-active {
+  &.chat-document-active {
     background: linear-gradient(72.47deg, rgb(var(--v-theme-primary)) 0%, #fff 300%);
     color: #fff;
 

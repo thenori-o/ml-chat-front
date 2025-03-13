@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { useChat } from './useChat'
-import { useChatStore } from '@/views/apps/chat/useChatStore'
-import { avatarText } from '@core/utils/formatters'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { useChat } from './useChat';
+import { useChatStore } from '@/views/apps/chat/useChatStore';
+import { avatarText } from '@core/utils/formatters';
 
 defineEmits<{
   (e: 'close'): void
-}>()
+}>();
 
-const store = useChatStore()
+const store = useChatStore();
 
-const { resolveAvatarBadgeVariant } = useChat()
+const { resolveAvatarBadgeVariant } = useChat();
 </script>
 
 <template>
@@ -36,29 +36,29 @@ const { resolveAvatarBadgeVariant } = useChat()
         offset-x="7"
         offset-y="4"
         bordered
-        :color="resolveAvatarBadgeVariant(store.activeChat.contact.status)"
+        :color="resolveAvatarBadgeVariant(store.activeChat.document.status)"
         class="chat-user-profile-badge mb-5"
       >
         <VAvatar
           size="80"
-          :variant="!store.activeChat.contact.avatar ? 'tonal' : undefined"
-          :color="!store.activeChat.contact.avatar ? resolveAvatarBadgeVariant(store.activeChat.contact.status) : undefined"
+          :variant="!store.activeChat.document.avatar ? 'tonal' : undefined"
+          :color="!store.activeChat.document.avatar ? resolveAvatarBadgeVariant(store.activeChat.document.status) : undefined"
         >
           <VImg
-            v-if="store.activeChat.contact.avatar"
-            :src="store.activeChat.contact.avatar"
+            v-if="store.activeChat.document.avatar"
+            :src="store.activeChat.document.avatar"
           />
           <span
             v-else
             class="text-3xl"
-          >{{ avatarText(store.activeChat.contact.fullName) }}</span>
+          >{{ avatarText(store.activeChat.document.fullName) }}</span>
         </VAvatar>
       </VBadge>
       <h5 class="text-h5">
-        {{ store.activeChat.contact.fullName }}
+        {{ store.activeChat.document.fullName }}
       </h5>
       <p class="text-capitalize text-medium-emphasis">
-        {{ store.activeChat.contact.role }}
+        {{ store.activeChat.document.role }}
       </p>
     </div>
 
@@ -71,7 +71,7 @@ const { resolveAvatarBadgeVariant } = useChat()
       <div class="my-8">
         <span class="text-sm text-disabled">ABOUT</span>
         <p class="mt-2">
-          {{ store.activeChat.contact.about }}
+          {{ store.activeChat.document.about }}
         </p>
       </div>
 
@@ -121,7 +121,7 @@ const { resolveAvatarBadgeVariant } = useChat()
             icon="tabler-star"
             size="24"
           />
-          <span>Important Contact</span>
+          <span>Important Document</span>
         </div>
         <div class="d-flex align-center mb-3">
           <VIcon
@@ -137,15 +137,7 @@ const { resolveAvatarBadgeVariant } = useChat()
             icon="tabler-trash"
             size="24"
           />
-          <span>Delete Contact</span>
-        </div>
-        <div class="d-flex align-center">
-          <VIcon
-            class="me-2 ms-1"
-            size="18"
-            icon="tabler-ban"
-          />
-          <span>Block Contact</span>
+          <span>Delete Document</span>
         </div>
       </div>
     </PerfectScrollbar>

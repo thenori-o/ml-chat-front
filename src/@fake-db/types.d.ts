@@ -329,13 +329,13 @@ export interface FetchEmailsPayload {
 // SECTION App: Chat
 export type ChatStatus = 'online' | 'offline' | 'busy' | 'away'
 
-export interface ChatContact {
+export interface ChatDocument {
   id: number
   fullName: string
   role: string
   about: string
   avatar: string
-  status: ChatStatus
+  status: ChatStatus 
 }
 
 export interface ChatMessage {
@@ -364,7 +364,7 @@ export interface ChatOut {
   lastMessage: ChatMessage[number]
 }
 
-export interface ChatContactWithChat extends ChatContact {
+export interface ChatDocumentWithChat extends ChatDocument {
   chat: ChatOut
 }
 // !SECTION App: Chat
