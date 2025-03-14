@@ -1,17 +1,23 @@
-import { mlBotService } from './ml-bot.service';
-import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage } from './types.d';
 import mock from '@/@fake-db/mock';
 import { genId } from '@/@fake-db/utils';
+import { mlBotService } from './ml-bot.service';
+import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage, ChatUser } from './types.d';
 
 const dayBeforePreviousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 2);
 
 interface Database {
-  profileUser: ChatDocument & {
+  profileUser: ChatUser & {
     settings: {
       isTwoStepAuthVerificationEnabled: boolean
       isNotificationsOn: boolean
     }
-  }
+  },
+  mlBotUser: ChatUser & {
+      settings: {
+        isTwoStepAuthVerificationEnabled: boolean
+        isNotificationsOn: boolean
+      }
+    },
   documents: ChatDocument[]
   chats: Chat[]
 }
@@ -24,6 +30,19 @@ const database: Database = {
     role: 'admin',
     about:
       'Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie marshmallow.',
+    status: 'online',
+    settings: {
+      isTwoStepAuthVerificationEnabled: true,
+      isNotificationsOn: false,
+    },
+  },
+  mlBotUser: {
+    id: 2,
+    avatar: '',
+    fullName: 'ML Bot',
+    role: 'bot',
+    about:
+      'Bot construído com um modelo de aprendizado de máquina de larga escala (LLM)',
     status: 'online',
     settings: {
       isTwoStepAuthVerificationEnabled: true,
@@ -43,7 +62,7 @@ const database: Database = {
   chats: [
     {
       id: 1,
-      userId: 2,
+      documentId: 1,
       unseenMsgs: 0,
       messages: [
         {
@@ -121,7 +140,7 @@ mock.onGet('/apps/chat/chats-and-documents').reply(config => {
 
   const chatsDocuments: ChatDocumentWithChat[] = database.chats
     .map(chat => {
-      const document = JSON.parse(JSON.stringify((database.documents.find(c => c.id === chat.userId) as ChatDocument)));
+      const document = JSON.parse(JSON.stringify((database.documents.find(c => c.id === chat.documentId) as ChatDocument)));
 
       document.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.messages.at(-1) };
 
@@ -129,12 +148,14 @@ mock.onGet('/apps/chat/chats-and-documents').reply(config => {
     })
     .reverse();
 
-  const profileUserData: ChatDocument = database.profileUser;
+  const profileUserData: ChatUser = database.profileUser;
+  const mlBotUserData: ChatUser = database.mlBotUser;
 
   const response = {
     chatsDocuments: chatsDocuments.filter(c => c.fullName.toLowerCase().includes(qLowered)),
     documents: database.documents.filter(c => c.fullName.toLowerCase().includes(qLowered)),
     profileUser: profileUserData,
+    mlBotUser: mlBotUserData
   };
 
   return [200, response];
@@ -149,10 +170,10 @@ mock.onGet('/apps/chat/users/profile-user').reply(() => [200, database.profileUs
 // GET: Return Single Chat
 // ------------------------------------------------
 mock.onGet(/\/apps\/chat\/chats\/\d+/).reply(config => {
-  // Get user id from URL
-  const userId = Number(config.url?.substring(config.url.lastIndexOf('/') + 1));
+  // Get document id from URL
+  const documentId = Number(config.url?.substring(config.url.lastIndexOf('/') + 1));
 
-  const chat = database.chats.find(c => c.userId === userId);
+  const chat = database.chats.find(c => c.documentId === documentId);
   if (chat)
     chat.unseenMsgs = 0;
 
@@ -160,7 +181,7 @@ mock.onGet(/\/apps\/chat\/chats\/\d+/).reply(config => {
     200,
     {
       chat,
-      document: database.documents.find(c => c.id === userId),
+      document: database.documents.find(c => c.id === documentId),
     },
   ];
 });
@@ -169,49 +190,61 @@ mock.onGet(/\/apps\/chat\/chats\/\d+/).reply(config => {
 // POST: Add new chat message
 // ------------------------------------------------
 mock.onPost(/\/apps\/chat\/chats\/\d+/).reply(async config => {
-  // Get user id from URL
   const documentId = Number(config.url?.substring(config.url.lastIndexOf('/') + 1));
-
-  // Get message from post data
   const { message, senderId } = JSON.parse(config.data);
 
-  let activeChat = database.chats.find(chat => chat.userId === documentId);
-
-  // Send message to ML BOT
-  const botResponse = await mlBotService().sendMessage(message);
-
-  const newMessageData: ChatMessage = {
-    message: botResponse,
-    time: String(new Date()),
-    senderId,
-    feedback: {
-      isSent: true,
-      isDelivered: false,
-      isSeen: false,
-    },
-  };
-
-  // If there's new chat for user create one
+  let activeChat = database.chats.find(chat => chat.documentId === documentId);
   let isNewChat = false;
-  if (activeChat === undefined) {
-    isNewChat = true;
 
-    database.chats.push({
-      id: genId(database.chats),
-      userId: documentId,
-      unseenMsgs: 0,
-      messages: [],
-    });
-    activeChat = database.chats.at(-1);
+  // Função auxiliar para criar mensagens
+  const createMessage = (msg: string, sender: number, isSent = true): ChatMessage => ({
+    message: msg,
+    time: new Date().toISOString(),
+    senderId: sender,
+    feedback: { isSent, isDelivered: false, isSeen: false },
+  });
+
+  // Mensagem do usuário (ainda sem saber se foi enviada com sucesso)
+  let userMessage = createMessage(message, senderId);
+
+  try {
+    const botResponse = await mlBotService().sendMessage(message);
+    const botMessage = createMessage(botResponse, database.mlBotUser.id);
+
+    // Se o bot respondeu, a mensagem do usuário é considerada enviada
+    userMessage.feedback.isSent = true;
+
+    if (!activeChat) {
+      isNewChat = true;
+      activeChat = {
+        id: genId(database.chats),
+        documentId,
+        unseenMsgs: 0,
+        messages: [userMessage, botMessage],
+      };
+      database.chats.push(activeChat);
+    } else {
+      activeChat.messages.push(userMessage, botMessage);
+    }
+
+    return [201, { msgs: [userMessage, botMessage], chat: isNewChat ? activeChat : undefined }];
+  } catch (error: any) {
+    // Se der erro, a mensagem do usuário fica com `isSent: false`
+    userMessage.feedback.isSent = false;
+
+    if (!activeChat) {
+      isNewChat = true;
+      activeChat = {
+        id: genId(database.chats),
+        documentId,
+        unseenMsgs: 0,
+        messages: [userMessage],
+      };
+      database.chats.push(activeChat);
+    } else {
+      activeChat.messages.push(userMessage);
+    }
+
+    return [201, { msgs: [userMessage], chat: isNewChat ? activeChat : undefined }];
   }
-  else {
-    activeChat.messages.push(newMessageData);
-  }
-
-  const response: { msg: ChatMessage; chat?: Chat } = { msg: newMessageData };
-
-  if (isNewChat)
-    response.chat = activeChat;
-
-  return [201, response];
 });

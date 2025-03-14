@@ -1,11 +1,12 @@
-import type { ActiveChat } from './useChat';
-import type { ChatDocument, ChatDocumentWithChat, ChatMessage, ChatOut } from '@/@core/services/ml-bot/types';
+import type { ChatDocument, ChatDocumentWithChat, ChatMessage, ChatOut, ChatUser } from '@/@core/services/ml-bot/types';
 import axios from '@axios';
+import type { ActiveChat } from './useChat';
 
 interface State {
   chatsDocuments: ChatDocumentWithChat[]
   documents: ChatDocument[]
-  profileUser: ChatDocument | undefined
+  profileUser: ChatUser | undefined
+  mlBotUser: ChatUser | undefined
   activeChat: ActiveChat
 }
 
@@ -15,6 +16,7 @@ export const useChatStore = defineStore('chat', {
     documents: [],
     chatsDocuments: [],
     profileUser: undefined,
+    mlBotUser: undefined,
     activeChat: null,
   }),
   actions: {
@@ -23,11 +25,12 @@ export const useChatStore = defineStore('chat', {
         params: { q },
       });
 
-      const { chatsDocuments, documents, profileUser } = data;
+      const { chatsDocuments, documents, profileUser, mlBotUser } = data;
 
       this.chatsDocuments = chatsDocuments;
       this.documents = documents;
       this.profileUser = profileUser;
+      this.mlBotUser = mlBotUser;
     },
 
     async getChat(userId: ChatDocument['id']) {

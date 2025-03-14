@@ -8,8 +8,8 @@ import './pages/help-center';
 import './pages/profile';
 
 // Apps
+import '../@core/services/ml-bot/chat';
 import './apps/calendar';
-import './apps/chat';
 import './apps/email';
 import './apps/invoice';
 import './apps/permissions';

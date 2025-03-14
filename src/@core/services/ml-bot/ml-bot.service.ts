@@ -1,5 +1,5 @@
-import type { ChatMessage } from './types';
 import axios from '@axios';
+import type { ChatMessage } from './types';
 
 export const mlBotService = () => {
   const mlHost = 'localhost:8000';
@@ -10,10 +10,12 @@ export const mlBotService = () => {
 
       return response.data; // Retorna os dados corretamente
     }
-    catch (error) {
+    catch (error: any) {
       console.error('Erro ao enviar mensagem:', error);
 
-      return 'Erro ao processar a resposta do bot'; // Retorno seguro para evitar erro de undefined
+    const errorMessage = error?.response?.data?.message || error?.message || 'Erro desconhecido';
+
+    throw new Error(`Erro ao processar a resposta do bot: ${errorMessage}`);
     }
   };
 

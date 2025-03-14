@@ -1,6 +1,15 @@
 // SECTION App: Chat
 export type ChatStatus = 'online' | 'offline' | 'busy' | 'away'
 
+export interface ChatUser {
+  id: number
+  fullName: string
+  role: string
+  about: string
+  avatar: string
+  status: ChatStatus 
+}
+
 export interface ChatDocument {
   id: number
   fullName: string
@@ -23,7 +32,7 @@ export interface ChatMessage {
 
 export interface Chat {
   id: number
-  userId: number
+  documentId: number
   unseenMsgs: number
   messages: ChatMessage[]
 }

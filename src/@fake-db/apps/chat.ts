@@ -1,7 +1,7 @@
-import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage } from './../types.d';
 import { mlBotService } from '@/@core/services/ml-bot/ml-bot.service';
 import mock from '@/@fake-db/mock';
 import { genId } from '@/@fake-db/utils';
+import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage } from './../types.d';
 
 const previousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
 const dayBeforePreviousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 2);
@@ -12,14 +12,14 @@ interface Database {
       isTwoStepAuthVerificationEnabled: boolean
       isNotificationsOn: boolean
     }
-  }
+  },
   documents: ChatDocument[]
   chats: Chat[]
 }
 
 const database: Database = {
   profileUser: {
-    id: 11,
+    id: 1,
     avatar: '',
     fullName: 'John Doe',
     role: 'admin',
