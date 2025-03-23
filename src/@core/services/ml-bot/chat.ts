@@ -1,5 +1,7 @@
 import mock from '@/@fake-db/mock';
 import { genId } from '@/@fake-db/utils';
+import avatar1 from '@images/avatars/avatar-1.png';
+import profile2 from '@images/avatars/profile-2.png';
 import { mlBotService } from './ml-bot.service';
 import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage, ChatUser } from './types.d';
 
@@ -25,7 +27,7 @@ interface Database {
 const database: Database = {
   profileUser: {
     id: 11,
-    avatar: '',
+    avatar: avatar1,
     fullName: 'John Doe',
     role: 'admin',
     about:
@@ -38,7 +40,7 @@ const database: Database = {
   },
   mlBotUser: {
     id: 2,
-    avatar: '',
+    avatar: profile2,
     fullName: 'ML Bot',
     role: 'bot',
     about:
@@ -52,11 +54,43 @@ const database: Database = {
   documents: [
     {
       id: 1,
-      fullName: 'CNH_Renovacao.pdf',
-      role: 'Habilitação',
-      about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
-      avatar: '',
-      status: 'offline',
+      fullName: "Renovacao_CNH_Protocolo.pdf",
+      role: "Habilitação",
+      about: "Protocolo de solicitação de renovação da CNH",
+      avatar: "",
+      status: "offline"
+    },
+    {
+      id: 2,
+      fullName: "CRLV_2024.pdf",
+      role: "Licenciamento",
+      about: "Certificado de Registro e Licenciamento do Veículo atualizado",
+      avatar: "",
+      status: "offline"
+    },
+    {
+      id: 3,
+      fullName: "Multa_Recorrencia.pdf",
+      role: "Multas",
+      about: "Documento de recurso para multa de trânsito",
+      avatar: "",
+      status: "offline"
+    },
+    {
+      id: 4,
+      fullName: "Auto_Infração.pdf",
+      role: "Infração",
+      about: "Cópia do auto de infração de trânsito",
+      avatar: "",
+      status: "offline"
+    },
+    {
+      id: 5,
+      fullName: "Laudo_Vistoria.pdf",
+      role: "Vistoria",
+      about: "Laudo de vistoria veicular emitido pelo Detran",
+      avatar: "",
+      status: "offline"
     },
   ],
   chats: [
@@ -66,67 +100,77 @@ const database: Database = {
       unseenMsgs: 0,
       messages: [
         {
-          message: 'Hi',
-          time: 'Mon Dec 10 2018 07:45:00 GMT+0000 (GMT)',
+          message: "Oi",
+          time: "Thu Mar 21 2025 08:30:00 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true,
-          },
+            isSeen: true
+          }
         },
         {
-          message: 'Hello. How can I help You?',
-          time: 'Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)',
+          message: "Olá, como posso te ajudar com a renovação da sua CNH?",
+          time: "Thu Mar 21 2025 08:31:15 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true,
-          },
+            isSeen: true
+          }
         },
         {
-          message: 'Can I get details of my last transaction I made last month? 🤔',
-          time: 'Mon Dec 11 2018 07:46:10 GMT+0000 (GMT)',
+          message: "Eu preciso saber os documentos necessários para a renovação da minha CNH.",
+          time: "Thu Mar 21 2025 08:32:10 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true,
-          },
+            isSeen: true
+          }
         },
         {
-          message: 'We need to check if we can provide you such information.',
-          time: 'Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)',
+          message: "Os documentos necessários geralmente incluem o CPF, RG, comprovante de residência e a CNH atual. Você tem todos esses documentos?",
+          time: "Thu Mar 21 2025 08:33:00 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true,
-          },
+            isSeen: true
+          }
         },
         {
-          message: 'I will inform you as I get update on this.',
-          time: 'Mon Dec 11 2018 07:46:15 GMT+0000 (GMT)',
-          senderId: 2,
-          feedback: {
-            isSent: true,
-            isDelivered: true,
-            isSeen: true,
-          },
-        },
-        {
-          message: 'If it takes long you can mail me at my mail address.',
-          time: String(dayBeforePreviousDay),
+          message: "Sim, tenho todos os documentos. O que mais preciso fazer?",
+          time: "Thu Mar 21 2025 08:33:45 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
-            isDelivered: false,
-            isSeen: false,
-          },
+            isDelivered: true,
+            isSeen: true
+          }
         },
-      ],
-    },
+        {
+          message: "Você precisará agendar uma avaliação médica, se ainda não tiver feito. Após isso, podemos seguir com a solicitação de renovação.",
+          time: "Thu Mar 21 2025 08:34:30 GMT+0000 (GMT)",
+          senderId: 2,
+          feedback: {
+            isSent: true,
+            isDelivered: true,
+            isSeen: true
+          }
+        },
+        {
+          message: "Entendido! Vou agendar a avaliação e volto em breve.",
+          time: "Thu Mar 21 2025 08:35:15 GMT+0000 (GMT)",
+          senderId: 11,
+          feedback: {
+            isSent: true,
+            isDelivered: true,
+            isSeen: true
+          }
+        }
+      ]
+    }    
   ],
 };
 

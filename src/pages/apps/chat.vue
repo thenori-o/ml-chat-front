@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
-import { useDisplay, useTheme } from 'vuetify';
 import type { ChatDocument as TypeChatDocument } from '@/@fake-db/types';
 import vuetifyInitialThemes from '@/plugins/vuetify/theme';
 import ChatLeftSidebarContent from '@/views/apps/chat/ChatLeftSidebarContent.vue';
 import ChatLog from '@/views/apps/chat/ChatLog.vue';
 import { useChatStore } from '@/views/apps/chat/useChatStore';
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar';
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { useDisplay, useTheme } from 'vuetify';
 
 // composables
 const vuetifyDisplays = useDisplay();
@@ -56,14 +56,14 @@ const sendMessage = async () => {
   });
 };
 
-const openChatOfDocument = async (userId: TypeChatDocument['id']) => {
-  await store.getChat(userId);
+const openChatOfDocument = async (documentId: TypeChatDocument['id']) => {
+  await store.getChat(documentId);
 
   // Reset message input
   msg.value = '';
 
   // Set unseenMsgs to 0
-  const document = store.chatsDocuments.find(c => c.id === userId);
+  const document = store.chatsDocuments.find(c => c.id === documentId);
   if (document)
     document.chat.unseenMsgs = 0;
 
@@ -156,19 +156,19 @@ const chatContentContainerBg = computed(() => {
 
           <!-- Header right content -->
           <div class="d-sm-flex align-center d-none">
-            <IconBtn>
+            <IconBtn disabled>
               <VIcon icon="tabler-send" />
             </IconBtn>
-            <IconBtn>
+            <IconBtn disabled>
               <VIcon icon="tabler-edit" />
             </IconBtn>
-            <IconBtn>
+            <IconBtn disabled>
               <VIcon icon="tabler-file-arrow-right" />
             </IconBtn>
-            <IconBtn>
+            <IconBtn disabled>
               <VIcon icon="tabler-reload" />
             </IconBtn>
-            <IconBtn>
+            <IconBtn disabled>
               <VIcon icon="tabler-trash" />
             </IconBtn>
           </div>
@@ -202,7 +202,7 @@ const chatContentContainerBg = computed(() => {
           >
             <template #prepend-inner>
               <IconBtn
-                class="me-2"
+                disabled
                 @click="refInputEl?.click()"
               >
                 <VIcon icon="tabler-file-type-pdf" />
@@ -340,8 +340,13 @@ $chat-app-header-height: 62px;
       padding-block-start: 0;
     }
 
+    .v-field__prepend-inner {
+      padding-top: 0;
+    }
+
     .v-field--appended {
       padding-inline-end: 9px;
+      align-items: center;
     }
   }
 }

@@ -4,14 +4,14 @@ export default [
     icon: { icon: 'tabler-layout-grid-add' },
     children: [
       {
-        title: 'Email',
-        icon: { icon: 'tabler-mail' },
-        to: 'apps-email',
-      },
-      {
         title: 'Chat',
         icon: { icon: 'tabler-message-circle' },
         to: 'apps-chat',
+      },
+      {
+        title: 'Email',
+        icon: { icon: 'tabler-mail' },
+        to: 'apps-email',
       },
       {
         title: 'Calendar',

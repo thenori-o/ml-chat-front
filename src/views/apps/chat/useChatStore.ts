@@ -43,7 +43,7 @@ export const useChatStore = defineStore('chat', {
       const senderId = this.profileUser?.id;
       const { data } = await axios.post(`/apps/chat/chats/${this.activeChat?.document.id}`, { message, senderId });
 
-      const { msg, chat }: { msg: ChatMessage; chat: ChatOut } = data;
+      const { msgs, chat }: { msgs: ChatMessage[]; chat: ChatOut } = data;
 
       // ? If it's not undefined => New chat is created (Document is not in list of chats)
       if (chat !== undefined) {
@@ -56,21 +56,21 @@ export const useChatStore = defineStore('chat', {
             id: chat.id,
             lastMessage: [],
             unseenMsgs: 0,
-            messages: [msg],
+            messages: msgs,
           },
         });
 
         if (this.activeChat) {
           this.activeChat.chat = {
             id: chat.id,
-            messages: [msg],
+            messages: [...msgs],
             unseenMsgs: 0,
             userId: this.activeChat?.document.id,
           };
         }
       }
       else {
-        this.activeChat?.chat?.messages.push(msg);
+        this.activeChat?.chat?.messages.push(...msgs);
       }
 
       // Set Last Message for active document
@@ -81,7 +81,7 @@ export const useChatStore = defineStore('chat', {
         return false;
       }) as ChatDocumentWithChat;
 
-      document.chat.lastMessage = msg;
+      document.chat.lastMessage = msgs.slice(-1)[0];
     },
   },
 });

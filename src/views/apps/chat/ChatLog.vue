@@ -10,9 +10,16 @@ interface MessageGroup {
   messages: Omit<ChatOut['messages'][number], 'senderId'>[]
 }
 
-const document = computed(() => ({
-  id: store.activeChat?.document.id,
-  avatar: store.activeChat?.document.avatar,
+const profileUser = computed(() => ({
+  id: store.profileUser?.id,
+  name: store.profileUser?.fullName,
+  avatar: store.profileUser?.avatar,
+}));
+
+const botProfile = computed(() => ({
+  id: store.mlBotUser?.id,
+  name: store.mlBotUser?.fullName,
+  avatar: store.mlBotUser?.avatar,
 }));
 
 // Feedback icon
@@ -81,21 +88,21 @@ const msgGroups = computed(() => {
       :key="msgGrp.senderId + String(index)"
       class="chat-group d-flex align-start"
       :class="[{
-        'flex-row-reverse': msgGrp.senderId !== document.id,
+        'flex-row-reverse': msgGrp.senderId !== botProfile.id,
         'mb-4': msgGroups.length - 1 !== index,
       }]"
     >
       <div
         class="chat-avatar"
-        :class="msgGrp.senderId !== document.id ? 'ms-4' : 'me-4'"
+        :class="msgGrp.senderId !== botProfile.id ? 'ms-4' : 'me-4'"
       >
         <VAvatar size="32">
-          <VImg :src="msgGrp.senderId === document.id ? document.avatar : store.profileUser?.avatar" />
+          <VImg :src="msgGrp.senderId === botProfile.id ? botProfile.avatar : profileUser?.avatar" />
         </VAvatar>
       </div>
       <div
         class="chat-body d-inline-flex flex-column"
-        :class="msgGrp.senderId !== document.id ? 'align-end' : 'align-start'"
+        :class="msgGrp.senderId !== botProfile.id ? 'align-end' : 'align-start'"
       >
         <p
           v-for="(msgData, msgIndex) in msgGrp.messages"
@@ -103,15 +110,15 @@ const msgGroups = computed(() => {
           class="chat-content py-2 px-4 elevation-1"
           style="background-color: rgb(var(--v-theme-surface));"
           :class="[
-            msgGrp.senderId === document.id ? 'chat-left' : 'bg-primary text-white chat-right',
+            msgGrp.senderId === botProfile.id ? 'chat-left' : 'bg-primary text-white chat-right',
             msgGrp.messages.length - 1 !== msgIndex ? 'mb-3' : 'mb-1',
           ]"
         >
           {{ msgData.message }}
         </p>
-        <div :class="{ 'text-right': msgGrp.senderId !== document.id }">
+        <div :class="{ 'text-right': msgGrp.senderId !== botProfile.id }">
           <VIcon
-            v-if="msgGrp.senderId !== document.id"
+            v-if="msgGrp.senderId !== botProfile.id"
             size="18"
             :color="resolveFeedbackIcon(msgGrp.messages[msgGrp.messages.length - 1].feedback).color"
           >

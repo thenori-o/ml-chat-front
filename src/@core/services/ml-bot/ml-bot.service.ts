@@ -1,14 +1,18 @@
-import axios from '@axios';
+import axios from 'axios';
 import type { ChatMessage } from './types';
 
 export const mlBotService = () => {
-  const mlHost = 'localhost:8000';
+  const botApi = axios.create({
+    baseURL: 'http://localhost:8000/api',
+    timeout: 5000,
+    headers: { 'Content-Type': 'application/json' },
+  });
 
   const sendMessage = async (message: ChatMessage['message']): Promise<string> => {
     try {
-      const response = await axios.post(`${mlHost}/ask_question`, { question: message });
+      const response = await botApi.post(`/ask_question`, { question: message });
 
-      return response.data; // Retorna os dados corretamente
+      return response.data.response; // Retorna os dados corretamente
     }
     catch (error: any) {
       console.error('Erro ao enviar mensagem:', error);
