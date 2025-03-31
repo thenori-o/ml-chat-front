@@ -33,8 +33,10 @@ export const useChatStore = defineStore('chat', {
       this.mlBotUser = mlBotUser;
     },
 
-    async getChat(userId: ChatDocument['id']) {
-      const { data } = await axios.get(`/apps/chat/chats/${userId}`);
+    async getChat(documentId: ChatDocument['id']) {
+      const params:any = {};
+
+      const { data } = await axios.get(`/apps/chat/chats/${documentId}`);
 
       this.activeChat = data;
     },

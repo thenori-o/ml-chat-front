@@ -1,17 +1,19 @@
 <script lang="ts" setup>
-import type { ChatDocument as TypeChatDocument } from '@/@fake-db/types';
-import vuetifyInitialThemes from '@/plugins/vuetify/theme';
-import ChatLeftSidebarContent from '@/views/apps/chat/ChatLeftSidebarContent.vue';
-import ChatLog from '@/views/apps/chat/ChatLog.vue';
-import { useChatStore } from '@/views/apps/chat/useChatStore';
-import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar';
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
-import { useDisplay, useTheme } from 'vuetify';
+import type { ChatDocument as TypeChatDocument } from "@/@fake-db/types";
+import vuetifyInitialThemes from "@/plugins/vuetify/theme";
+import ChatLeftSidebarContent from "@/views/apps/chat/ChatLeftSidebarContent.vue";
+import ChatLog from "@/views/apps/chat/ChatLog.vue";
+import { useChatStore } from "@/views/apps/chat/useChatStore";
+import { useResponsiveLeftSidebar } from "@core/composable/useResponsiveSidebar";
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
+import { useDisplay, useTheme } from "vuetify";
 
 // composables
 const vuetifyDisplays = useDisplay();
 const store = useChatStore();
-const { isLeftSidebarOpen } = useResponsiveLeftSidebar(vuetifyDisplays.smAndDown);
+const { isLeftSidebarOpen } = useResponsiveLeftSidebar(
+  vuetifyDisplays.smAndDown
+);
 
 // Perfect scrollbar
 const chatLogPS = ref();
@@ -23,32 +25,27 @@ const scrollToBottomInChatLog = () => {
 };
 
 // Search query
-const q = ref('');
+const q = ref("");
 
-watch(
-  q,
-  val => store.fetchChatsAndDocuments(val),
-  { immediate: true },
-);
+watch(q, (val) => store.fetchChatsAndDocuments(val), { immediate: true });
 
 // Open Sidebar in smAndDown when "start conversation" is clicked
 const startConversation = () => {
-  if (vuetifyDisplays.mdAndUp.value)
-    return;
+  if (vuetifyDisplays.mdAndUp.value) return;
   isLeftSidebarOpen.value = true;
 };
 
 // Chat message
-const msg = ref('');
+const msg = ref("");
 
 const sendMessage = async () => {
-  if (!msg.value)
-    return;
+  if (!msg.value) return;
 
   await store.sendMsg(msg.value);
 
+  docs.value = { selected: [] };
   // Reset message input
-  msg.value = '';
+  msg.value = "";
 
   // Scroll to bottom
   nextTick(() => {
@@ -56,20 +53,18 @@ const sendMessage = async () => {
   });
 };
 
-const openChatOfDocument = async (documentId: TypeChatDocument['id']) => {
-  await store.getChat(documentId);
+const openChatOfDocument = async (id: TypeChatDocument["id"]) => {
+  await store.getChat(id);
 
   // Reset message input
-  msg.value = '';
+  msg.value = "";
 
   // Set unseenMsgs to 0
-  const document = store.chatsDocuments.find(c => c.id === documentId);
-  if (document)
-    document.chat.unseenMsgs = 0;
+  const document = store.chatsDocuments.find((c) => c.id === id);
+  if (document) document.chat.unseenMsgs = 0;
 
   // if smAndDown =>  Close Chat & Documents left sidebar
-  if (vuetifyDisplays.smAndDown.value)
-    isLeftSidebarOpen.value = false;
+  if (vuetifyDisplays.smAndDown.value) isLeftSidebarOpen.value = false;
 
   // Scroll to bottom
   nextTick(() => {
@@ -89,13 +84,16 @@ const refInputEl = ref<HTMLElement>();
 const { name } = useTheme();
 
 const chatContentContainerBg = computed(() => {
-  let color = 'transparent';
+  let color = "transparent";
 
   if (vuetifyInitialThemes)
-    color = vuetifyInitialThemes.themes?.[name.value].colors?.background as string;
+    color = vuetifyInitialThemes.themes?.[name.value].colors
+      ?.background as string;
 
   return color;
 });
+
+const docs = ref({ selected: new Array<number>() });
 </script>
 
 <template>
@@ -114,6 +112,7 @@ const chatContentContainerBg = computed(() => {
       <ChatLeftSidebarContent
         v-model:isDrawerOpen="isLeftSidebarOpen"
         v-model:search="q"
+        v-model:docs="docs"
         @open-chat-of-document="openChatOfDocument"
         @show-user-profile="isUserProfileSidebarOpen = true"
         @close="isLeftSidebarOpen = false"
@@ -123,17 +122,13 @@ const chatContentContainerBg = computed(() => {
     <!-- 👉 Chat content -->
     <VMain class="chat-content-container">
       <!-- 👉 Right content: Active Chat -->
-      <div
-        v-if="store.activeChat"
-        class="d-flex flex-column h-100"
-      >
+      <div v-if="store.activeChat" class="d-flex flex-column h-100">
         <!-- 👉 Active chat header -->
-        <div class="active-chat-header d-flex align-center text-medium-emphasis bg-surface">
+        <div
+          class="active-chat-header d-flex align-center text-medium-emphasis bg-surface"
+        >
           <!-- Sidebar toggler -->
-          <IconBtn
-            class="d-md-none me-3"
-            @click="isLeftSidebarOpen = true"
-          >
+          <IconBtn class="d-md-none me-3" @click="isLeftSidebarOpen = true">
             <VIcon icon="tabler-menu-2" />
           </IconBtn>
 
@@ -201,17 +196,12 @@ const chatContentContainerBg = computed(() => {
             autofocus
           >
             <template #prepend-inner>
-              <IconBtn
-                disabled
-                @click="refInputEl?.click()"
-              >
+              <IconBtn disabled @click="refInputEl?.click()">
                 <VIcon icon="tabler-file-type-pdf" />
               </IconBtn>
             </template>
             <template #append-inner>
-              <VBtn @click="sendMessage">
-                Send
-              </VBtn>
+              <VBtn @click="sendMessage"> Send </VBtn>
             </template>
           </VTextField>
 
@@ -221,19 +211,13 @@ const chatContentContainerBg = computed(() => {
             name="file"
             accept=".pdf"
             hidden
-          >
+          />
         </VForm>
       </div>
 
       <!-- 👉 Start conversation -->
-      <div
-        v-else
-        class="d-flex h-100 align-center justify-center flex-column"
-      >
-        <VAvatar
-          size="109"
-          class="elevation-3 mb-6 bg-surface"
-        >
+      <div v-else class="d-flex h-100 align-center justify-center flex-column">
+        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
           <VIcon
             size="50"
             class="rounded-0 text-high-emphasis"

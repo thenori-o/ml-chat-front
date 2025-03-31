@@ -12,6 +12,7 @@ export interface ChatUser {
 
 export interface ChatDocument {
   id: number
+  related?: ChatDocument[]
   fullName: string
   role: string
   about: string

@@ -1,52 +1,81 @@
 <script lang="ts" setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
-import type { ChatDocument as TypeChatDocument } from '@/@fake-db/types';
-import ChatDocument from '@/views/apps/chat/ChatDocument.vue';
-import { useChatStore } from '@/views/apps/chat/useChatStore';
+import type { ChatDocument as TypeChatDocument } from "@/@fake-db/types";
+import ChatDocument from "@/views/apps/chat/ChatDocument.vue";
+import { useChatStore } from "@/views/apps/chat/useChatStore";
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 
 const props = defineProps<{
-  search: string
-  isDrawerOpen: boolean
+  search: string;
+  isDrawerOpen: boolean;
+  docs: {
+    selected: Array<number>;
+  };
 }>();
 
-defineEmits<{
-  (e: 'openChatOfDocument', id: TypeChatDocument['id']): void
-  (e: 'showUserProfile'): void
-  (e: 'close'): void
+const emit = defineEmits<{
+  (e: "openChatOfDocument", id: TypeChatDocument["id"]): void;
+  (e: "showUserProfile"): void;
+  (e: "close"): void;
+  (e: "update:docs", value: Array<number>): void;
 }>();
 
-const search = useVModel(props, 'search');
+const search = useVModel(props, "search");
 
 const store = useChatStore();
+
+const isAddMode = ref<boolean>(false);
+const handleAddChat = () => {
+  isAddMode.value = !isAddMode.value;
+};
+
+watch(
+  () => props.docs.selected,
+  (newVal) => {
+    console.log("newVal", newVal);
+    if (newVal && newVal.length > 0) isAddMode.value = true;
+    else isAddMode.value = false;
+  }
+);
+
+const selectedDocs = computed({
+  get: () => props.docs.selected,
+  set: (newValue) => {
+    emit("update:docs", newValue);
+  },
+});
+
+const setDocSelection = (payload: {
+  id: TypeChatDocument["id"];
+  isSelected: boolean;
+}) => {
+  console.log("selecionou", props.docs.selected);
+  if (!selectedDocs.value) return;
+  const selected = [...selectedDocs.value]; // Faz uma cópia do array
+  if (payload.isSelected) {
+    if (!selected.includes(payload.id)) selected.push(payload.id);
+  } else {
+    const index = selected.indexOf(payload.id);
+    if (index !== -1) selected.splice(index, 1);
+  }
+  emit("update:docs", selected); // Emite a atualização para o componente pai
+};
 </script>
 
 <template>
   <!-- 👉 Chat list header -->
-  <div
-    v-if="store.profileUser"
-    class="chat-list-header"
-  >
+  <div v-if="store.profileUser" class="chat-list-header">
     <AppTextField
       v-model="search"
       placeholder="Pesquisar..."
       class="ms-4 me-1 chat-list-search"
     >
       <template #prepend-inner>
-        <VIcon
-          size="22"
-          icon="tabler-search"
-        />
+        <VIcon size="22" icon="tabler-search" />
       </template>
     </AppTextField>
 
-    <IconBtn
-      v-if="$vuetify.display.smAndDown"
-      @click="$emit('close')"
-    >
-      <VIcon
-        icon="tabler-x"
-        class="text-medium-emphasis"
-      />
+    <IconBtn v-if="$vuetify.display.smAndDown" @click="$emit('close')">
+      <VIcon icon="tabler-x" class="text-medium-emphasis" />
     </IconBtn>
   </div>
   <VDivider />
@@ -57,13 +86,16 @@ const store = useChatStore();
     :options="{ wheelPropagation: false }"
   >
     <li>
-      <span class="chat-document-header d-block text-primary text-xl font-weight-medium">Chats</span>
+      <span
+        class="chat-document-header d-block text-primary text-xl font-weight-medium"
+        >Chats</span
+      >
     </li>
 
     <ChatDocument
       v-for="document in store.chatsDocuments"
       :key="`chat-${document.id}`"
-      :user="document"
+      :document="document"
       is-chat-document
       @click="$emit('openChatOfDocument', document.id)"
     />
@@ -71,23 +103,43 @@ const store = useChatStore();
     <span
       v-show="!store.chatsDocuments.length"
       class="no-chat-items-text text-disabled"
-    >No chats found</span>
+      >No chats found</span
+    >
 
-    <li>
-      <span class="chat-document-header d-block text-primary text-xl font-weight-medium">Documentos</span>
+    <li class="d-flex justify-space-between align-center">
+      <span
+        class="chat-document-header d-block text-primary text-xl font-weight-medium"
+        >Documentos</span
+      >
+      <IconBtn size="small" @click="handleAddChat">
+        <VIcon
+          :icon="isAddMode ? 'tabler-x' : 'tabler-plus'"
+          :class="{
+            'rotate-forward': isAddMode,
+            'rotate-backward': !isAddMode,
+          }"
+        />
+        <VTooltip activator="parent" location="start" open-delay="300">
+          {{ !isAddMode ? "Cancelar" : "Adicionar" }}
+        </VTooltip>
+      </IconBtn>
     </li>
 
     <ChatDocument
       v-for="document in store.documents"
       :key="`chat-${document.id}`"
-      :user="document"
-      @click="$emit('openChatOfDocument', document.id)"
+      :document="document"
+      :isAddMode="isAddMode"
+      :selectedDocs="props.docs.selected"
+      @click="!isAddMode && $emit('openChatOfDocument', document.id)"
+      @selected="setDocSelection"
     />
 
     <span
       v-show="!store.documents.length"
       class="no-chat-items-text text-disabled"
-    >No documents found</span>
+      >No documents found</span
+    >
   </PerfectScrollbar>
 </template>
 
@@ -112,5 +164,15 @@ const store = useChatStore();
   .v-field--focused {
     box-shadow: none !important;
   }
+}
+
+.rotate-forward {
+  transition: transform 0.3s ease-in-out;
+  transform: rotate(180deg);
+}
+
+.rotate-backward {
+  transition: transform 0.3s ease-in-out;
+  transform: rotate(0deg);
 }
 </style>
