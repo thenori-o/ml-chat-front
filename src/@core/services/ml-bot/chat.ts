@@ -1,38 +1,46 @@
-import mock from '@/@fake-db/mock';
-import { genId } from '@/@fake-db/utils';
-import avatar1 from '@images/avatars/avatar-1.png';
-import profile2 from '@images/avatars/profile-2.png';
-import { mlBotService } from './ml-bot.service';
-import type { Chat, ChatDocument, ChatDocumentWithChat, ChatMessage, ChatUser } from './types.d';
+import mock from "@/@fake-db/mock";
+import { genId } from "@/@fake-db/utils";
+import avatar1 from "@images/avatars/avatar-1.png";
+import profile2 from "@images/avatars/profile-2.png";
+import { mlBotService } from "./ml-bot.service";
+import type {
+  Chat,
+  ChatDocument,
+  ChatDocumentWithChat,
+  ChatMessage,
+  ChatUser,
+} from "./types.d";
 
-const dayBeforePreviousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 2);
+const dayBeforePreviousDay = new Date(
+  new Date().getTime() - 24 * 60 * 60 * 1000 * 2
+);
 
 interface Database {
   profileUser: ChatUser & {
     settings: {
-      isTwoStepAuthVerificationEnabled: boolean
-      isNotificationsOn: boolean
-    }
-  },
+      isTwoStepAuthVerificationEnabled: boolean;
+      isNotificationsOn: boolean;
+    };
+  };
   mlBotUser: ChatUser & {
-      settings: {
-        isTwoStepAuthVerificationEnabled: boolean
-        isNotificationsOn: boolean
-      }
-    },
-  documents: ChatDocument[]
-  chats: Chat[]
+    settings: {
+      isTwoStepAuthVerificationEnabled: boolean;
+      isNotificationsOn: boolean;
+    };
+  };
+  documents: ChatDocument[];
+  chats: Chat[];
 }
 
 const database: Database = {
   profileUser: {
     id: 11,
     avatar: avatar1,
-    fullName: 'John Doe',
-    role: 'admin',
+    fullName: "John Doe",
+    role: "admin",
     about:
-      'Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie marshmallow.',
-    status: 'online',
+      "Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie marshmallow.",
+    status: "online",
     settings: {
       isTwoStepAuthVerificationEnabled: true,
       isNotificationsOn: false,
@@ -41,11 +49,11 @@ const database: Database = {
   mlBotUser: {
     id: 2,
     avatar: profile2,
-    fullName: 'ML Bot',
-    role: 'bot',
+    fullName: "ML Bot",
+    role: "bot",
     about:
-      'Bot construído com um modelo de aprendizado de máquina de larga escala (LLM)',
-    status: 'online',
+      "Bot construído com um modelo de aprendizado de máquina de larga escala (LLM)",
+    status: "online",
     settings: {
       isTwoStepAuthVerificationEnabled: true,
       isNotificationsOn: false,
@@ -58,39 +66,7 @@ const database: Database = {
       role: "Habilitação",
       about: "Protocolo de solicitação de renovação da CNH",
       avatar: "",
-      status: "offline"
-    },
-    {
-      id: 2,
-      fullName: "CRLV_2024.pdf",
-      role: "Licenciamento",
-      about: "Certificado de Registro e Licenciamento do Veículo atualizado",
-      avatar: "",
-      status: "offline"
-    },
-    {
-      id: 3,
-      fullName: "Multa_Recorrencia.pdf",
-      role: "Multas",
-      about: "Documento de recurso para multa de trânsito",
-      avatar: "",
-      status: "offline"
-    },
-    {
-      id: 4,
-      fullName: "Auto_Infração.pdf",
-      role: "Infração",
-      about: "Cópia do auto de infração de trânsito",
-      avatar: "",
-      status: "offline"
-    },
-    {
-      id: 5,
-      fullName: "Laudo_Vistoria.pdf",
-      role: "Vistoria",
-      about: "Laudo de vistoria veicular emitido pelo Detran",
-      avatar: "",
-      status: "offline"
+      status: "offline",
     },
   ],
   chats: [
@@ -106,8 +82,8 @@ const database: Database = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: "Olá, como posso te ajudar com a renovação da sua CNH?",
@@ -116,28 +92,30 @@ const database: Database = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
-          message: "Eu preciso saber os documentos necessários para a renovação da minha CNH.",
+          message:
+            "Eu preciso saber os documentos necessários para a renovação da minha CNH.",
           time: "Thu Mar 21 2025 08:32:10 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
-          message: "Os documentos necessários geralmente incluem o CPF, RG, comprovante de residência e a CNH atual. Você tem todos esses documentos?",
+          message:
+            "Os documentos necessários geralmente incluem o CPF, RG, comprovante de residência e a CNH atual. Você tem todos esses documentos?",
           time: "Thu Mar 21 2025 08:33:00 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: "Sim, tenho todos os documentos. O que mais preciso fazer?",
@@ -146,18 +124,19 @@ const database: Database = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
-          message: "Você precisará agendar uma avaliação médica, se ainda não tiver feito. Após isso, podemos seguir com a solicitação de renovação.",
+          message:
+            "Você precisará agendar uma avaliação médica, se ainda não tiver feito. Após isso, podemos seguir com a solicitação de renovação.",
           time: "Thu Mar 21 2025 08:34:30 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: "Entendido! Vou agendar a avaliação e volto em breve.",
@@ -166,27 +145,52 @@ const database: Database = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
-        }
-      ]
-    }    
+            isSeen: true,
+          },
+        },
+      ],
+    },
   ],
 };
 
 // ------------------------------------------------
 // GET: Return Chats Documents and Documents
 // ------------------------------------------------
-mock.onGet('/apps/chat/chats-and-documents').reply(config => {
-  const { q = '' }: { q?: string } = config.params;
-
+mock.onGet("/apps/chat/chats-and-documents").reply(async (config) => {
+  const { q = "" }: { q?: string } = config.params;
   const qLowered = q.toLowerCase();
 
-  const chatsDocuments: ChatDocumentWithChat[] = database.chats
-    .map(chat => {
-      const document = JSON.parse(JSON.stringify((database.documents.find(c => c.id === chat.documentId) as ChatDocument)));
+  const botResponse = await mlBotService().listDocuments();
+  const maxId =
+    database.documents.length > 0
+      ? Math.max(...database.documents.map((doc) => doc.id))
+      : 0;
+  const pdfDocs = botResponse.map((doc, index) => ({
+    ...doc,
+    id: maxId + index + 1,
+    role: "Document", // Define um papel ou qualquer outro atributo que você precisar
+    about: "Arquivo PDF armazenado localmente", // Descrição do documento
+    avatar: "", // Caso queira usar uma imagem/avatar, pode adicionar aqui
+    status: "offline", // Status pode ser "active" ou outro conforme sua necessidade
+  }));
 
-      document.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.messages.at(-1) };
+  database.documents = [...database.documents, ...(pdfDocs as any)];
+
+  const chatsDocuments: ChatDocumentWithChat[] = database.chats
+    .map((chat) => {
+      const document = JSON.parse(
+        JSON.stringify(
+          database.documents.find(
+            (c) => c.id === chat.documentId
+          ) as ChatDocument
+        )
+      );
+
+      document.chat = {
+        id: chat.id,
+        unseenMsgs: chat.unseenMsgs,
+        lastMessage: chat.messages.at(-1),
+      };
 
       return document;
     })
@@ -196,10 +200,14 @@ mock.onGet('/apps/chat/chats-and-documents').reply(config => {
   const mlBotUserData: ChatUser = database.mlBotUser;
 
   const response = {
-    chatsDocuments: chatsDocuments.filter(c => c.fullName.toLowerCase().includes(qLowered)),
-    documents: database.documents.filter(c => c.fullName.toLowerCase().includes(qLowered)),
+    chatsDocuments: chatsDocuments.filter((c) =>
+      c.fullName.toLowerCase().includes(qLowered)
+    ),
+    documents: database.documents.filter((c) =>
+      c.fullName.toLowerCase().includes(qLowered)
+    ),
     profileUser: profileUserData,
-    mlBotUser: mlBotUserData
+    mlBotUser: mlBotUserData,
   };
 
   return [200, response];
@@ -208,24 +216,27 @@ mock.onGet('/apps/chat/chats-and-documents').reply(config => {
 // ------------------------------------------------
 // GET: Return Single Chat
 // ------------------------------------------------
-mock.onGet('/apps/chat/users/profile-user').reply(() => [200, database.profileUser]);
+mock
+  .onGet("/apps/chat/users/profile-user")
+  .reply(() => [200, database.profileUser]);
 
 // ------------------------------------------------
 // GET: Return Single Chat
 // ------------------------------------------------
-mock.onGet(/\/apps\/chat\/chats\/\d+/).reply(config => {
+mock.onGet(/\/apps\/chat\/chats\/\d+/).reply((config) => {
   // Get document id from URL
-  const documentId = Number(config.url?.substring(config.url.lastIndexOf('/') + 1));
+  const documentId = Number(
+    config.url?.substring(config.url.lastIndexOf("/") + 1)
+  );
 
-  const chat = database.chats.find(c => c.documentId === documentId);
-  if (chat)
-    chat.unseenMsgs = 0;
+  const chat = database.chats.find((c) => c.documentId === documentId);
+  if (chat) chat.unseenMsgs = 0;
 
   return [
     200,
     {
       chat,
-      document: database.documents.find(c => c.id === documentId),
+      document: database.documents.find((c) => c.id === documentId),
     },
   ];
 });
@@ -233,15 +244,23 @@ mock.onGet(/\/apps\/chat\/chats\/\d+/).reply(config => {
 // ------------------------------------------------
 // POST: Add new chat message
 // ------------------------------------------------
-mock.onPost(/\/apps\/chat\/chats\/\d+/).reply(async config => {
-  const documentId = Number(config.url?.substring(config.url.lastIndexOf('/') + 1));
+mock.onPost(/\/apps\/chat\/chats\/\d+/).reply(async (config) => {
+  const documentId = Number(
+    config.url?.substring(config.url.lastIndexOf("/") + 1)
+  );
   const { message, senderId } = JSON.parse(config.data);
 
-  let activeChat = database.chats.find(chat => chat.documentId === documentId);
+  let activeChat = database.chats.find(
+    (chat) => chat.documentId === documentId
+  );
   let isNewChat = false;
 
   // Função auxiliar para criar mensagens
-  const createMessage = (msg: string, sender: number, isSent = true): ChatMessage => ({
+  const createMessage = (
+    msg: string,
+    sender: number,
+    isSent = true
+  ): ChatMessage => ({
     message: msg,
     time: new Date().toISOString(),
     senderId: sender,
@@ -271,7 +290,13 @@ mock.onPost(/\/apps\/chat\/chats\/\d+/).reply(async config => {
       activeChat.messages.push(userMessage, botMessage);
     }
 
-    return [201, { msgs: [userMessage, botMessage], chat: isNewChat ? activeChat : undefined }];
+    return [
+      201,
+      {
+        msgs: [userMessage, botMessage],
+        chat: isNewChat ? activeChat : undefined,
+      },
+    ];
   } catch (error: any) {
     // Se der erro, a mensagem do usuário fica com `isSent: false`
     userMessage.feedback.isSent = false;
@@ -289,6 +314,9 @@ mock.onPost(/\/apps\/chat\/chats\/\d+/).reply(async config => {
       activeChat.messages.push(userMessage);
     }
 
-    return [201, { msgs: [userMessage], chat: isNewChat ? activeChat : undefined }];
+    return [
+      201,
+      { msgs: [userMessage], chat: isNewChat ? activeChat : undefined },
+    ];
   }
 });

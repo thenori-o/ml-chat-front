@@ -18,6 +18,7 @@ export interface ChatDocument {
   about: string
   avatar: string
   status: ChatStatus 
+  base64?:string
 }
 
 export interface ChatMessage {

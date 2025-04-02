@@ -7,9 +7,6 @@ import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 const props = defineProps<{
   search: string;
   isDrawerOpen: boolean;
-  docs: {
-    selected: Array<number>;
-  };
 }>();
 
 const emit = defineEmits<{
@@ -23,41 +20,9 @@ const search = useVModel(props, "search");
 
 const store = useChatStore();
 
-const isAddMode = ref<boolean>(false);
+const { addMode } = storeToRefs(store);
 const handleAddChat = () => {
-  isAddMode.value = !isAddMode.value;
-};
-
-watch(
-  () => props.docs.selected,
-  (newVal) => {
-    console.log("newVal", newVal);
-    if (newVal && newVal.length > 0) isAddMode.value = true;
-    else isAddMode.value = false;
-  }
-);
-
-const selectedDocs = computed({
-  get: () => props.docs.selected,
-  set: (newValue) => {
-    emit("update:docs", newValue);
-  },
-});
-
-const setDocSelection = (payload: {
-  id: TypeChatDocument["id"];
-  isSelected: boolean;
-}) => {
-  console.log("selecionou", props.docs.selected);
-  if (!selectedDocs.value) return;
-  const selected = [...selectedDocs.value]; // Faz uma cópia do array
-  if (payload.isSelected) {
-    if (!selected.includes(payload.id)) selected.push(payload.id);
-  } else {
-    const index = selected.indexOf(payload.id);
-    if (index !== -1) selected.splice(index, 1);
-  }
-  emit("update:docs", selected); // Emite a atualização para o componente pai
+  addMode.value = !addMode.value;
 };
 </script>
 
@@ -113,14 +78,14 @@ const setDocSelection = (payload: {
       >
       <IconBtn size="small" @click="handleAddChat">
         <VIcon
-          :icon="isAddMode ? 'tabler-x' : 'tabler-plus'"
+          :icon="addMode ? 'tabler-x' : 'tabler-plus'"
           :class="{
-            'rotate-forward': isAddMode,
-            'rotate-backward': !isAddMode,
+            'rotate-forward': addMode,
+            'rotate-backward': !addMode,
           }"
         />
         <VTooltip activator="parent" location="start" open-delay="300">
-          {{ !isAddMode ? "Cancelar" : "Adicionar" }}
+          {{ !addMode ? "Cancelar" : "Adicionar" }}
         </VTooltip>
       </IconBtn>
     </li>
@@ -129,10 +94,8 @@ const setDocSelection = (payload: {
       v-for="document in store.documents"
       :key="`chat-${document.id}`"
       :document="document"
-      :isAddMode="isAddMode"
-      :selectedDocs="props.docs.selected"
-      @click="!isAddMode && $emit('openChatOfDocument', document.id)"
-      @selected="setDocSelection"
+      :isAddMode="addMode"
+      @click="!addMode && $emit('openChatOfDocument', document.id)"
     />
 
     <span

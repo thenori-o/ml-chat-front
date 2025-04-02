@@ -9,17 +9,22 @@ interface Props {
   isChatDocument?: boolean;
   isAddMode?: boolean;
   document: ChatDocument | ChatDocumentWithChat;
-  selectedDocs?: Array<number>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isChatDocument: false,
 });
-const emit = defineEmits<{
-  (e: "selected", value: { id: ChatDocument["id"]; isSelected: boolean }): void;
-}>();
 
 const store = useChatStore();
+const { selectedDocs } = storeToRefs(store);
+
+watch(
+  () => props.isAddMode,
+  (newVal) => {
+    if (!newVal) isSelected.value = false;
+  }
+);
+
 const { resolveAvatarBadgeVariant } = useChat();
 
 const isChatDocumentActive = computed(() => {
@@ -30,31 +35,18 @@ const isChatDocumentActive = computed(() => {
 });
 
 const isSelected = ref(false);
-onUpdated(() => {
-  if (!props.selectedDocs || props.selectedDocs.length == 0) {
+
+const toggleSelected = (newValue: boolean) => {
+  if (newValue) {
+    selectedDocs.value = [...selectedDocs.value, props.document.id];
+    isSelected.value = true;
+  } else {
+    selectedDocs.value = selectedDocs.value.filter(
+      (id) => id !== props.document.id
+    );
     isSelected.value = false;
   }
-});
-
-const toggleSelected = () => {
-  isSelected.value = !isSelected.value;
-  emit("selected", { id: props.document.id, isSelected: isSelected.value });
 };
-
-watch(
-  () => props.isAddMode,
-  (newVal, oldVal) => {
-    if (!newVal) isSelected.value = false;
-    else if (isChatDocumentActive.value) {
-      isSelected.value = true;
-    }
-  }
-);
-
-watch(isChatDocumentActive, (newVal) => {
-  if (newVal && props.isAddMode) isSelected.value = true;
-  else isSelected.value = false;
-});
 </script>
 
 <template>
@@ -94,7 +86,7 @@ watch(isChatDocumentActive, (newVal) => {
           <VCheckbox
             v-if="isAddMode || isSelected"
             :model-value="isSelected"
-            @update:model-value="toggleSelected()"
+            @update:model-value="toggleSelected"
             class="absolute-center"
           />
         </VFadeTransition>

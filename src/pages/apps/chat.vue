@@ -15,6 +15,9 @@ const { isLeftSidebarOpen } = useResponsiveLeftSidebar(
   vuetifyDisplays.smAndDown
 );
 
+// docs relacionados
+const { selectedDocs } = storeToRefs(store);
+
 // Perfect scrollbar
 const chatLogPS = ref();
 
@@ -37,20 +40,23 @@ const startConversation = () => {
 
 // Chat message
 const msg = ref("");
+const isSending = ref(false);
 
 const sendMessage = async () => {
-  if (!msg.value) return;
+  if (!msg.value || !msg.value.trim()) return;
 
-  await store.sendMsg(msg.value);
+  try {
+    await store.sendMsg(msg.value);
+    msg.value = "";
 
-  docs.value = { selected: [] };
-  // Reset message input
-  msg.value = "";
-
-  // Scroll to bottom
-  nextTick(() => {
-    scrollToBottomInChatLog();
-  });
+    nextTick(() => {
+      scrollToBottomInChatLog();
+    });
+  } catch (error) {
+    console.error("Erro ao enviar mensagem:", error);
+  } finally {
+    isSending.value = false;
+  }
 };
 
 const openChatOfDocument = async (id: TypeChatDocument["id"]) => {
@@ -92,8 +98,6 @@ const chatContentContainerBg = computed(() => {
 
   return color;
 });
-
-const docs = ref({ selected: new Array<number>() });
 </script>
 
 <template>
@@ -112,7 +116,6 @@ const docs = ref({ selected: new Array<number>() });
       <ChatLeftSidebarContent
         v-model:isDrawerOpen="isLeftSidebarOpen"
         v-model:search="q"
-        v-model:docs="docs"
         @open-chat-of-document="openChatOfDocument"
         @show-user-profile="isUserProfileSidebarOpen = true"
         @close="isLeftSidebarOpen = false"
@@ -201,7 +204,13 @@ const docs = ref({ selected: new Array<number>() });
               </IconBtn>
             </template>
             <template #append-inner>
-              <VBtn @click="sendMessage"> Send </VBtn>
+              <VBtn
+                :loading="isSending"
+                :disabled="isSending || !msg.trim()"
+                @click="sendMessage"
+              >
+                Send
+              </VBtn>
             </template>
           </VTextField>
 
